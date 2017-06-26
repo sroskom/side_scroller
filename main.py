@@ -1,44 +1,47 @@
 from kivy.app import App
-from kivy.uix.carousel import Carousel
-from kivy.storage.jsonstore import JsonStore
-import os.path
-import sys
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivy.uix.widget import Widget
-from kivy.clock import Clock
-from kivy.uix.image import Image
+from lib.main import CusWid
+from kivy.core.audio import SoundLoader
+from os.path import join
 
-class FullImage(Image):
-    pass
-
-class CusWid(Widget):
-    init = True
-    def slide(self, *args):
-        if self.ids.img.pos[0] > self.width:
-            self.ids.img.pos[0] = self.ids.img2.pos[0] - self.ids.img2.width
-           
-        self.ids.img.pos[0] = self.ids.img.pos[0]+2
+class Manager(ScreenManager):
+    
+    def __init__(self, *args):
+        super(Manager,self).__init__()
+        self.ids.cuswid.startanim()
+        self.startCampMusic()
         
-        if self.init:
-            self.ids.img2.pos[0] = self.ids.img2.width*(-1)
-            self.init = False
-        if self.ids.img2.pos[0] > self.width:
-            self.ids.img2.pos[0] = self.ids.img.pos[0] - self.ids.img.width
-        else:
-            self.ids.img2.pos[0] = self.ids.img2.pos[0]+2
-    def startanim(self, *args):
-        Clock.schedule_interval(self.slide, 1.0/60)
+    def startScrollerMusic(self, *args):
+        self.scrolrSound = SoundLoader.load(join(App.get_running_app().user_data_dir,'background_song_01.mp3'))
+        if self.scrolrSound:
+            self.scrolrSound.loop = True
+            self.scrolrSound.play()
+            
+    def startCampMusic(self, *args):
+        self.campSound = SoundLoader.load(join(App.get_running_app().user_data_dir,'camp_song.mp3'))
+        if self.campSound:
+            self.campSound.loop = True
+            self.campSound.play()
 
+    def stopCampMusic(self, *args):
+        if self.campSound and self.campSound.state != 'stop':
+            print(self.campSound.state)
+            self.campSound.stop()
+            self.campSound.unload()
+
+    def stopScrollerMusic(self, *args):
+        if self.scrolrSound and self.scrolrSound.state != 'stop':
+            self.scrolrSound.stop()
+            self.scrolrSound.unload()
+        
 class TempApp(App):
     def on_pause(self, *args):
         return True
     def build(self, *args):
-        cuswid = CusWid()
-        cuswid.startanim()
-        return cuswid
+        manager = Manager()
+        return manager
 
 if __name__ == '__main__':
     app = TempApp()
     app.run()
+    

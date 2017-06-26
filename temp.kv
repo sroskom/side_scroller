@@ -1,18 +1,39 @@
-<-FullImage>:
-	canvas:
-        Color:
-            rgb: (1, 1, 1)
-        Rectangle:
-            texture: self.texture
-            size: self.height*3,self.height
-			pos: self.x,self.y
-  
-<CusWid>:
-	FullImage:
-		id: img
-		source: 'background_front.png'
-		size: root.height*3,root.height
-	FullImage:
-		id: img2
-		source: 'background_front2.png'
-		size: root.height*3,root.height
+#:include lib/temp.kv
+
+<Manager>:
+	Screen:
+		name: 'campScrn'
+		Widget:
+			FullImage:
+				source: 'images/camp_01.png'
+				size: root.height*3,root.height
+			Button:
+				text: '+'
+				font_size: self.size[0]
+				size: root.height*.15, self.size[0]
+				pos: root.width*.01, root.height-self.size[0]-self.pos[0]
+				on_press:
+					print('leaving camp')
+					root.stopCampMusic()
+					root.startScrollerMusic()
+					root.transition.direction = 'right'
+					root.current = 'scrlrScrn'
+					
+	Screen:
+		name: 'scrlrScrn'
+		size: root.width,root.height
+		CusWid:
+			id: cuswid
+			size: root.width,root.height
+			Button:
+				text: 'H'
+				markup: True
+				font_size: self.size[0]
+				size: root.height*.15, root.height*.15
+				pos: (root.width*.10)+(root.width*.03),(root.height-self.size[0])-root.width*.01
+				on_press:
+					root.stopScrollerMusic()
+					root.startCampMusic()
+					root.transition.direction = 'right'
+					root.current = 'campScrn'
+			
